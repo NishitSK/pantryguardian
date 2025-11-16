@@ -74,6 +74,19 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Test endpoints - simple responses without DB
+app.get('/api/test/products', (req, res) => {
+  res.json({ message: 'Products endpoint working', data: [] });
+});
+
+app.get('/api/test/storage-methods', (req, res) => {
+  res.json({ message: 'Storage methods endpoint working', data: [] });
+});
+
+app.get('/api/test/profile', (req, res) => {
+  res.json({ message: 'Profile endpoint working', user: 'demo@example.com' });
+});
+
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/inventory', inventoryRoutes);
