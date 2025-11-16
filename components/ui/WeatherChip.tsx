@@ -1,6 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
+import { getApiBaseUrl } from '@/lib/api'
 
 export default function WeatherChip() {
   const { data: session } = useSession()
@@ -49,7 +50,8 @@ export default function WeatherChip() {
     if (!session?.user?.email) return
     
     try {
-      const response = await fetch('/api/user/profile')
+      const baseUrl = getApiBaseUrl()
+      const response = await fetch(`${baseUrl}/api/user/profile`)
       if (response.ok) {
         const data = await response.json()
         setUserCity(data.city || 'London')
@@ -62,8 +64,9 @@ export default function WeatherChip() {
 
   const fetchWeather = async () => {
     try {
+      const baseUrl = getApiBaseUrl()
       const query = coords ? `lat=${coords.lat}&lon=${coords.lon}` : `city=${encodeURIComponent(userCity)}`
-      const response = await fetch(`/api/weather/current?${query}&t=${Date.now()}`, {
+      const response = await fetch(`${baseUrl}/api/weather/current?${query}&t=${Date.now()}`, {
         cache: 'no-store',
         headers: {
           'Cache-Control': 'no-cache'

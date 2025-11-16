@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
+import { getApiBaseUrl } from '@/lib/api'
 
 export default function InsightsLocationWeather() {
   const [city, setCity] = useState('')
@@ -14,7 +15,8 @@ export default function InsightsLocationWeather() {
     // Load user city
     ;(async () => {
       try {
-        const r = await fetch('/api/user/profile', { cache: 'no-store' })
+        const baseUrl = getApiBaseUrl()
+        const r = await fetch(`${baseUrl}/api/user/profile`, { cache: 'no-store' })
         if (r.ok) {
           const data = await r.json()
           const c = data.city || 'London'
@@ -31,7 +33,8 @@ export default function InsightsLocationWeather() {
 
   const fetchWeather = async (targetCity: string) => {
     try {
-      const r = await fetch(`/api/weather/current?city=${encodeURIComponent(targetCity)}&t=${Date.now()}`, {
+      const baseUrl = getApiBaseUrl()
+      const r = await fetch(`${baseUrl}/api/weather/current?city=${encodeURIComponent(targetCity)}&t=${Date.now()}`, {
         cache: 'no-store',
         headers: { 'Cache-Control': 'no-cache' }
       })
@@ -48,7 +51,8 @@ export default function InsightsLocationWeather() {
     setSaving(true)
     setMsg('')
     try {
-      const r = await fetch('/api/user/profile', {
+      const baseUrl = getApiBaseUrl()
+      const r = await fetch(`${baseUrl}/api/user/profile`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ city })
@@ -76,9 +80,10 @@ export default function InsightsLocationWeather() {
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         try {
+          const baseUrl = getApiBaseUrl()
           const { latitude, longitude } = pos.coords
           // Ask our API for weather + resolved name; no API keys on client
-          const r = await fetch(`/api/weather/current?lat=${latitude}&lon=${longitude}&t=${Date.now()}`, { cache: 'no-store' })
+          const r = await fetch(`${baseUrl}/api/weather/current?lat=${latitude}&lon=${longitude}&t=${Date.now()}`, { cache: 'no-store' })
           if (r.ok) {
             const data = await r.json()
             const detected = data?.locationName

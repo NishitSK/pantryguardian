@@ -5,6 +5,10 @@ import { prisma } from '@/lib/prisma'
 import { predict } from '@/lib/prediction'
 import { getCurrentWeather } from '@/lib/weather'
 
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions)

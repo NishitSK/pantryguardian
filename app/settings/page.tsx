@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import SectionHeading from '@/components/ui/SectionHeading'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
+import { getApiBaseUrl } from '@/lib/api'
 
 export default function SettingsPage() {
   const { data: session, status } = useSession()
@@ -21,7 +22,8 @@ export default function SettingsPage() {
 
   const fetchUserProfile = async () => {
     try {
-      const response = await fetch('/api/user/profile')
+      const baseUrl = getApiBaseUrl()
+      const response = await fetch(`${baseUrl}/api/user/profile`)
       if (response.ok) {
         const data = await response.json()
         setCity(data.city || 'London')
@@ -75,7 +77,8 @@ export default function SettingsPage() {
     setSaving(true)
     setMessage('')
     try {
-      const response = await fetch('/api/user/profile', {
+      const baseUrl = getApiBaseUrl()
+      const response = await fetch(`${baseUrl}/api/user/profile`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ city })

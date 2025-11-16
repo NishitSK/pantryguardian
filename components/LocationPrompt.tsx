@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import Card from './ui/Card'
 import Button from './ui/Button'
+import { getApiBaseUrl } from '@/lib/api'
 
 interface LocationPromptProps {
   onLocationSet: (city: string) => void
@@ -67,7 +68,8 @@ export default function LocationPrompt({ onLocationSet }: LocationPromptProps) {
     if (!city) return
 
     try {
-      const response = await fetch('/api/user/profile', {
+      const baseUrl = getApiBaseUrl()
+      const response = await fetch(`${baseUrl}/api/user/profile`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ city })

@@ -5,6 +5,7 @@ import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
 import SectionHeading from '@/components/ui/SectionHeading'
 import { formatIndianDate } from '@/lib/dateUtils'
+import { getApiBaseUrl } from '@/lib/api'
 
 type Product = {
   id: string
@@ -60,9 +61,10 @@ export default function AddItemPage() {
 
   const fetchData = async () => {
     try {
+      const baseUrl = getApiBaseUrl()
       const [productsRes, storageRes] = await Promise.all([
-        fetch('/api/products'),
-        fetch('/api/storage-methods')
+        fetch(`${baseUrl}/api/products`),
+        fetch(`${baseUrl}/api/storage-methods`)
       ])
 
       if (!productsRes.ok || !storageRes.ok) {
@@ -123,7 +125,8 @@ export default function AddItemPage() {
     setSubmitting(true)
 
     try {
-      const response = await fetch('/api/inventory', {
+      const baseUrl = getApiBaseUrl()
+      const response = await fetch(`${baseUrl}/api/inventory`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
