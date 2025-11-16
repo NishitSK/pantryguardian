@@ -4,7 +4,8 @@ const { verifyToken } = require('../middleware/auth');
 const router = express.Router();
 
 // Get current weather
-router.get('/current', verifyToken, async (req, res) => {
+// TODO: Add verifyToken back after implementing JWT auth on frontend
+router.get('/current', async (req, res) => {
   try {
     const { city } = req.query;
 
@@ -42,7 +43,8 @@ router.get('/current', verifyToken, async (req, res) => {
 });
 
 // Get weather by coordinates
-router.get('/coordinates', verifyToken, async (req, res) => {
+// TODO: Add verifyToken back after implementing JWT auth on frontend
+router.get('/coordinates', async (req, res) => {
   try {
     const { lat, lon } = req.query;
 

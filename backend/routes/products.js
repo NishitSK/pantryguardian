@@ -5,7 +5,8 @@ const { verifyToken } = require('../middleware/auth');
 const router = express.Router();
 
 // Get all products with optional search
-router.get('/', verifyToken, async (req, res) => {
+// TODO: Add verifyToken back after implementing JWT auth on frontend
+router.get('/', async (req, res) => {
   try {
     const { search } = req.query;
 

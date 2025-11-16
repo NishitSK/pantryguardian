@@ -5,10 +5,12 @@ const { verifyToken } = require('../middleware/auth');
 const router = express.Router();
 
 // Get all inventory items
-router.get('/', verifyToken, async (req, res) => {
+// TODO: Add verifyToken back after implementing JWT auth on frontend
+router.get('/', async (req, res) => {
   try {
-    const user = await prisma.user.findUnique({
-      where: { email: req.user.email }
+    // Temporary: Use demo user
+    const user = await prisma.user.findFirst({
+      where: { email: 'demo@example.com' }
     });
 
     if (!user) {
@@ -35,7 +37,8 @@ router.get('/', verifyToken, async (req, res) => {
 });
 
 // Add inventory item
-router.post('/', verifyToken, async (req, res) => {
+// TODO: Add verifyToken back after implementing JWT auth on frontend
+router.post('/', async (req, res) => {
   try {
     const { productId, storageMethodId, quantity, purchaseDate } = req.body;
 
@@ -156,7 +159,8 @@ router.post('/', verifyToken, async (req, res) => {
 });
 
 // Update inventory item
-router.patch('/:id', verifyToken, async (req, res) => {
+// TODO: Add verifyToken back after implementing JWT auth on frontend
+router.patch('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const { quantity, currentFreshnessScore } = req.body;
@@ -204,7 +208,8 @@ router.patch('/:id', verifyToken, async (req, res) => {
 });
 
 // Delete inventory item
-router.delete('/:id', verifyToken, async (req, res) => {
+// TODO: Add verifyToken back after implementing JWT auth on frontend
+router.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params;
 

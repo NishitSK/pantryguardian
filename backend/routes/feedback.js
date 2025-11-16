@@ -5,10 +5,12 @@ const { verifyToken } = require('../middleware/auth');
 const router = express.Router();
 
 // Get all feedback for user
-router.get('/', verifyToken, async (req, res) => {
+// TODO: Add verifyToken back after implementing JWT auth on frontend
+router.get('/', async (req, res) => {
   try {
-    const user = await prisma.user.findUnique({
-      where: { email: req.user.email }
+    // Temporary: Use demo user
+    const user = await prisma.user.findFirst({
+      where: { email: 'demo@example.com' }
     });
 
     if (!user) {
@@ -39,7 +41,8 @@ router.get('/', verifyToken, async (req, res) => {
 });
 
 // Submit feedback
-router.post('/', verifyToken, async (req, res) => {
+// TODO: Add verifyToken back after implementing JWT auth on frontend
+router.post('/', async (req, res) => {
   try {
     const { inventoryItemId, userReportedExpiry, freshnessScore, notes } = req.body;
 
@@ -55,8 +58,9 @@ router.post('/', verifyToken, async (req, res) => {
       });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email: req.user.email }
+    // Temporary: Use demo user
+    const user = await prisma.user.findFirst({
+      where: { email: 'demo@example.com' }
     });
 
     if (!user) {

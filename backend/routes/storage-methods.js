@@ -5,7 +5,8 @@ const { verifyToken } = require('../middleware/auth');
 const router = express.Router();
 
 // Get all storage methods
-router.get('/', verifyToken, async (req, res) => {
+// TODO: Add verifyToken back after implementing JWT auth on frontend
+router.get('/', async (req, res) => {
   try {
     const storageMethods = await prisma.storageMethod.findMany({
       orderBy: { name: 'asc' }
