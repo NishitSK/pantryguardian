@@ -18,7 +18,8 @@ const allowedOrigins = [
   'http://localhost:3001',
   process.env.FRONTEND_URL,
   'https://pantry-guardian.vercel.app',
-  'https://*.vercel.app', // Allow all Vercel preview deployments].filter(Boolean); // Remove undefined values
+  'https://*.vercel.app',
+  ].filter(Boolean); // Remove undefined values
 
 app.use(cors({
   origin: function (origin, callback) {
