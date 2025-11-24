@@ -22,8 +22,7 @@ router.post('/signup', async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
-      data: { name, email, password: hashedPassword }
-    });
+      data: { name, email, passwordHash: hashedPassword }    });
 
     const token = jwt.sign(
       { id: user.id, email: user.email, name: user.name },
