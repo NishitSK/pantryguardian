@@ -42,9 +42,9 @@ router.post('/', async (req, res) => {
   try {
     const { productId, storageMethodId, quantity, purchaseDate } = req.body;
 
+        // Temporary: Use demo user
     const user = await prisma.user.findUnique({
-      where: { email: req.user.email }
-    });
+      where: { email: 'demo@example.com' }    });
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
@@ -214,8 +214,7 @@ router.delete('/:id', async (req, res) => {
     const { id } = req.params;
 
     const user = await prisma.user.findUnique({
-      where: { email: req.user.email }
-    });
+      where: { email: 'demo@example.com' }    });
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
