@@ -11,7 +11,7 @@ The API routes exist on your Render backend, not on Vercel.
 
 1. Go to [Render Dashboard](https://dashboard.render.com/)
 2. Click on your `pantry-guardian-backend` service
-3. Copy the URL at the top (looks like: `https://pantry-guardian-backend-xxxx.onrender.com`)
+3. Copy the URL at the top (looks like: `https://pantryguardian.onrender.com`)
 
 ### Step 2: Set Environment Variable on Vercel
 
@@ -20,7 +20,7 @@ The API routes exist on your Render backend, not on Vercel.
 3. Go to **Settings** → **Environment Variables**
 4. Add this variable:
    - **Name**: `NEXT_PUBLIC_API_URL`
-   - **Value**: `https://your-backend-xxxx.onrender.com` (your Render URL from Step 1)
+   - **Value**: `https://pantryguardian.onrender.com` (your Render URL from Step 1)
    - **Environment**: Check all three (Production, Preview, Development)
 5. Click **Save**
 
@@ -53,9 +53,9 @@ On Render, make sure `FRONTEND_URL` is set to your Vercel URL:
 3. Go to **Network** tab
 4. Try to load the app
 5. Look for API calls - they should now go to:
-   - ✅ `https://your-backend.onrender.com/api/products`
-   - ✅ `https://your-backend.onrender.com/api/storage-methods`
-   - ✅ `https://your-backend.onrender.com/api/weather/current`
+   - ✅ `https://pantryguardian.onrender.com/api/products`
+   - ✅ `https://pantryguardian.onrender.com/api/storage-methods`
+   - ✅ `https://pantryguardian.onrender.com/api/weather/current`
 
 NOT to:
    - ❌ `https://pantry-guardian.vercel.app/api/products` (404)
@@ -65,7 +65,7 @@ NOT to:
 - [ ] `NEXT_PUBLIC_API_URL` is set on Vercel (must start with `https://`)
 - [ ] `FRONTEND_URL` is set on Render (your Vercel URL)
 - [ ] Both services have been redeployed after setting env vars
-- [ ] Render backend health check works: Visit `https://your-backend.onrender.com/health`
+- [ ] Render backend health check works: Visit `https://pantryguardian.onrender.com/health`
 - [ ] Network tab shows API calls going to Render (not Vercel)
 - [ ] No CORS errors in browser console
 - [ ] No 404 errors for `/api/*` paths
@@ -129,7 +129,7 @@ Open in browser or use curl:
 
 ```bash
 # Health check (should work without auth)
-curl https://your-backend.onrender.com/health
+curl https://pantryguardian.onrender.com/health
 
 # Should return: {"status":"ok","timestamp":"..."}
 ```
@@ -145,7 +145,7 @@ fetch(`${baseUrl}/api/products`)
 
 This will:
 - Return `""` locally (uses Next.js API routes)
-- Return `"https://your-backend.onrender.com"` on Vercel (if env var is set)
+- Return `"https://pantryguardian.onrender.com"` on Vercel (if env var is set)
 
 ## Need More Help?
 
@@ -159,10 +159,10 @@ This will:
 ```bash
 # Check if env var is being used (in browser console on Vercel site)
 console.log(process.env.NEXT_PUBLIC_API_URL)
-// Should show: "https://your-backend.onrender.com"
+// Should show: "https://pantryguardian.onrender.com"
 
 # Test backend health
-curl https://your-backend.onrender.com/health
+curl https://pantryguardian.onrender.com/health
 
 # Redeploy Vercel (from terminal)
 git commit --allow-empty -m "Trigger Vercel redeploy"
@@ -174,9 +174,9 @@ git push
 | What | Where | Correct URL |
 |------|-------|-------------|
 | Frontend | Vercel | `https://pantry-guardian.vercel.app` |
-| Backend API | Render | `https://pantry-guardian-backend-xxxx.onrender.com` |
-| Products API | Backend | `https://backend-xxxx.onrender.com/api/products` |
-| Weather API | Backend | `https://backend-xxxx.onrender.com/api/weather/current` |
-| Health Check | Backend | `https://backend-xxxx.onrender.com/health` |
+| Backend API | Render | `https://pantryguardian.onrender.com` |
+| Products API | Backend | `https://pantryguardian.onrender.com/api/products` |
+| Weather API | Backend | `https://pantryguardian.onrender.com/api/weather/current` |
+| Health Check | Backend | `https://pantryguardian.onrender.com/health` |
 
 Your frontend should NEVER call its own `/api/*` paths - all API calls must go to Render!

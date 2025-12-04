@@ -40,7 +40,7 @@ Add these in the "Environment" section:
 DATABASE_URL=postgresql://neondb_owner:password@host/neondb?sslmode=require
 NEXTAUTH_SECRET=<generate-with-openssl-rand-base64-32>
 WEATHER_API_KEY=7f2cc4799a7f2199aa43a90578920042
-FRONTEND_URL=https://your-app.vercel.app
+FRONTEND_URL=https://pantry-guardian.vercel.app
 NODE_ENV=production
 ```
 
@@ -53,11 +53,11 @@ openssl rand -base64 32
 
 - Click "Create Web Service"
 - Wait for deployment to complete
-- Note your backend URL: `https://your-app.onrender.com`
+- Note your backend URL: `https://pantryguardian.onrender.com`
 
 ### 4. Test Backend
 
-Visit: `https://your-app.onrender.com/health`
+Visit: `https://pantryguardian.onrender.com/health`
 
 Should return:
 ```json
@@ -87,9 +87,9 @@ Add these in "Settings" → "Environment Variables":
 ```
 DATABASE_URL=postgresql://neondb_owner:password@host/neondb?sslmode=require
 NEXTAUTH_SECRET=<same-as-backend>
-NEXTAUTH_URL=https://your-app.vercel.app
+NEXTAUTH_URL=https://pantry-guardian.vercel.app
 WEATHER_API_KEY=7f2cc4799a7f2199aa43a90578920042
-NEXT_PUBLIC_API_URL=https://your-backend.onrender.com
+NEXT_PUBLIC_API_URL=https://pantryguardian.onrender.com
 ```
 
 **Important:**
@@ -101,13 +101,13 @@ NEXT_PUBLIC_API_URL=https://your-backend.onrender.com
 
 - Click "Deploy"
 - Wait for deployment to complete
-- Your app will be live at: `https://your-app.vercel.app`
+- Your app will be live at: `https://pantry-guardian.vercel.app`
 
 ### 4. Update Backend CORS
 
 Go back to Render and update `FRONTEND_URL`:
 ```
-FRONTEND_URL=https://your-app.vercel.app
+FRONTEND_URL=https://pantry-guardian.vercel.app
 ```
 
 This ensures CORS allows requests from your Vercel domain.
