@@ -101,6 +101,7 @@ router.post('/', async (req, res) => {
         productId,
         storageMethodId,
         quantity: parseInt(quantity),
+      unit,
       purchasedAt: new Date(purchaseDate),        currentFreshnessScore: 5
       },
       include: {
