@@ -1,5 +1,6 @@
 import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
+import Image from 'next/image'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import SectionHeading from '@/components/ui/SectionHeading'
@@ -7,12 +8,14 @@ import Card from '@/components/ui/Card'
 import UrgencyBadge from '@/components/UrgencyBadge'
 import { formatIndianDate } from '@/lib/dateUtils'
 import LocationPromptWrapper from '@/components/LocationPromptWrapper'
+import LandingPage from '@/components/LandingPage'
+import RecipeSuggester from '@/components/RecipeSuggester'
 
 export default async function Home() {
   const session = await getServerSession(authOptions)
   
   if (!session?.user?.email) {
-    redirect('/auth/login')
+    return <LandingPage />
   }
 
   const user = await prisma.user.findUnique({
@@ -20,7 +23,7 @@ export default async function Home() {
   })
 
   if (!user) {
-    redirect('/auth/login')
+    return <LandingPage />
   }
 
   // Get all items with their predictions
@@ -58,27 +61,64 @@ export default async function Home() {
 
   const totalItems = allItems.length
 
+  // Prepare items for the recipe suggester (only need product details)
+  const suggesterItems = atRiskItems.map(item => ({
+    id: item.id,
+    product: {
+      name: item.product.name,
+      category: item.product.category
+    }
+  }))
+
+  // Fetch recipes from DB
+  let dbRecipes = []
+  try {
+    // @ts-ignore
+    if (prisma.recipe) {
+      // @ts-ignore
+      dbRecipes = await prisma.recipe.findMany({
+        include: {
+          ingredients: true
+        }
+      })
+    }
+  } catch (error) {
+    console.error("Failed to fetch recipes:", error)
+  }
+
   return (
     <>
+      <div className="fixed inset-0 z-[-1]">
+        <Image
+          src="https://images.unsplash.com/photo-1495195134817-aeb325a55b65?q=80&w=1920&auto=format&fit=crop"
+          alt="Background"
+          fill
+          className="object-cover opacity-15 dark:opacity-5"
+          priority
+        />
+      </div>
       <LocationPromptWrapper />
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8 relative">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">
+          <h1 className="text-4xl font-bold text-foreground mb-2">
             Welcome back, {user.name}!
           </h1>
-          <p className="text-gray-600">
+          <p className="text-muted-foreground font-medium">
             You have {totalItems} items in your pantry
           </p>
         </div>
 
       <div className="mb-8">
-        <SectionHeading className="mb-4">
-          Items Requiring Attention
-        </SectionHeading>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+          <SectionHeading className="mb-0">
+            Items Requiring Attention
+          </SectionHeading>
+          <RecipeSuggester items={suggesterItems} dbRecipes={dbRecipes} />
+        </div>
         
         {atRiskItems.length === 0 ? (
           <Card>
-            <p className="text-gray-600">
+            <p className="text-muted-foreground">
               🎉 Great! No items expiring in the next 3 days.
             </p>
           </Card>
@@ -101,7 +141,7 @@ export default async function Home() {
               return (
                 <Card key={item.id}>
                   <div className="flex items-start justify-between mb-3">
-                    <h3 className="font-semibold text-lg text-gray-800">
+                    <h3 className="font-semibold text-lg text-foreground">
                       {item.product.name}
                     </h3>
                     <UrgencyBadge level={urgencyLevel} />
@@ -109,25 +149,25 @@ export default async function Home() {
                   
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Quantity:</span>
-                      <span className="font-medium">{item.quantity} {item.unit}</span>
+                      <span className="text-muted-foreground font-medium">Quantity:</span>
+                      <span className="font-semibold text-foreground">{item.quantity} {item.unit}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Storage:</span>
-                      <span className="font-medium">{item.storageMethod.name}</span>
+                      <span className="text-muted-foreground font-medium">Storage:</span>
+                      <span className="font-semibold text-foreground">{item.storageMethod.name}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Expires:</span>
-                      <span className="font-medium">
+                      <span className="text-muted-foreground font-medium">Expires:</span>
+                      <span className="font-semibold text-foreground">
                         {formatIndianDate(new Date(latestPrediction.predictedExpiry))}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Days left:</span>
-                      <span className={`font-medium ${
-                        daysUntilExpiry < 0 ? 'text-red-600' : 
-                        daysUntilExpiry === 0 ? 'text-orange-600' : 
-                        'text-yellow-600'
+                      <span className="text-muted-foreground font-medium">Days left:</span>
+                      <span className={`font-bold ${
+                        daysUntilExpiry < 0 ? 'text-red-600 dark:text-red-400' : 
+                        daysUntilExpiry === 0 ? 'text-orange-600 dark:text-orange-400' : 
+                        'text-yellow-700 dark:text-yellow-400'
                       }`}>
                         {daysUntilExpiry < 0 ? 'Expired' : 
                          daysUntilExpiry === 0 ? 'Today' : 

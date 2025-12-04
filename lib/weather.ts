@@ -30,16 +30,22 @@ export async function getCurrentWeather(city: string): Promise<Weather | null> {
 
 export async function fetchWeatherDetailed(city: string): Promise<WeatherDetailed> {
   const key = process.env.WEATHER_API_KEY
+  console.log(`[Weather] Fetching for city: ${city}, Key exists: ${!!key}`)
   if (key) {
     try {
       const g = await geocode(city, key)
       const base = g ? `lat=${g.lat}&lon=${g.lon}` : `q=${encodeURIComponent(city)}`
-      const resp = await fetch(`https://api.openweathermap.org/data/2.5/weather?${base}&units=metric&appid=${key}`, { 
+      const url = `https://api.openweathermap.org/data/2.5/weather?${base}&units=metric&appid=${key}`
+      console.log(`[Weather] Fetching URL: ${url.replace(key, 'HIDDEN')}`)
+      
+      const resp = await fetch(url, { 
         cache: 'no-store',
         next: { revalidate: 0 }
       })
+      
       if (resp.ok) {
         const data = await resp.json()
+        console.log(`[Weather] API Response for ${city}:`, JSON.stringify(data).substring(0, 100) + '...')
         const tempC = typeof data?.main?.temp === 'number' ? data.main.temp : 8
         const feelsLikeC = typeof data?.main?.feels_like === 'number' ? data.main.feels_like : undefined
         const humidity = typeof data?.main?.humidity === 'number' ? data.main.humidity : 55
@@ -47,10 +53,14 @@ export async function fetchWeatherDetailed(city: string): Promise<WeatherDetaile
         const asOf = typeof data?.dt === 'number' ? data.dt : undefined
         const locationName = g?.name || (typeof data?.name === 'string' ? data.name : undefined)
         return { tempC, feelsLikeC, humidity, condition, asOf, locationName, lat: g?.lat, lon: g?.lon }
+      } else {
+        console.error(`[Weather] API Error: ${resp.status} ${resp.statusText}`)
       }
     } catch (err) {
       console.error('Weather fetch error:', err)
     }
+  } else {
+    console.warn('[Weather] No API key found')
   }
   return { tempC: 10, humidity: 60, condition: 'Clear', locationName: city }
 }

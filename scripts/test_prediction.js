@@ -1,21 +1,7 @@
-import { addDays } from 'date-fns'
 
-type Inputs = {
-  baseShelfLifeDays: number
-  roomTempShelfLifeDays?: number | null
-  fridgeShelfLifeDays?: number | null
-  freezerShelfLifeDays?: number | null
-  storageMethodName: string
-  tempMinC: number
-  tempMaxC: number
-  humidityPreferred: number
-  tempC: number
-  humidity: number
-  purchasedAt: Date
-  openedAt?: Date | null
-}
+const { addDays } = require('date-fns')
 
-export function predict(inputs: Inputs) {
+function predict(inputs) {
   const { 
     baseShelfLifeDays, 
     roomTempShelfLifeDays, 
@@ -34,18 +20,21 @@ export function predict(inputs: Inputs) {
   let days = baseShelfLifeDays
   const methodLower = storageMethodName.toLowerCase()
   
+  // LOGIC FROM lib/prediction.ts
   if (methodLower.includes('room') && roomTempShelfLifeDays !== undefined && roomTempShelfLifeDays !== null) {
     days = roomTempShelfLifeDays
-  } else if ((methodLower.includes('fridge') || methodLower.includes('refrig')) && fridgeShelfLifeDays !== undefined && fridgeShelfLifeDays !== null) {
+  } else if (methodLower.includes('fridge') && fridgeShelfLifeDays !== undefined && fridgeShelfLifeDays !== null) {
     days = fridgeShelfLifeDays
   } else if (methodLower.includes('freezer') && freezerShelfLifeDays !== undefined && freezerShelfLifeDays !== null) {
     days = freezerShelfLifeDays
   }
+  
+  console.log(`Storage: ${storageMethodName}, Base Days: ${days}`)
+
   let penalty = 0
 
   // Only apply temperature penalty for room temperature storage
-  // For fridge/freezer, we assume the internal temperature is correct regardless of weather
-  const isControlledStorage = methodLower.includes('fridge') || methodLower.includes('refrig') || methodLower.includes('freezer')
+  const isControlledStorage = methodLower.includes('fridge') || methodLower.includes('freezer')
 
   if (!isControlledStorage) {
     if (tempC < tempMinC) {
@@ -55,18 +44,51 @@ export function predict(inputs: Inputs) {
       const diff = tempC - tempMaxC
       penalty += Math.min(0.5, 0.03 * diff)
     }
-
+    
     const humidityDiff = Math.abs(humidity - humidityPreferred)
     penalty += Math.min(0.2, 0.003 * humidityDiff)
   }
 
   if (openedAt) penalty += 0.25
 
+  console.log(`Penalty: ${penalty}`)
+
   const effective = Math.max(0, days * (1 - penalty))
+  console.log(`Effective Days: ${effective}`)
+  
   const predictedExpiry = addDays(purchasedAt, Math.round(effective))
 
-  let confidence = 0.8 - penalty
-  confidence = Math.max(0.5, Math.min(0.9, confidence))
-
-  return { predictedExpiry, confidence, modelVersion: 'rb-1.1' }
+  return predictedExpiry
 }
+
+const chicken = {
+  baseShelfLifeDays: 2,
+  roomTempShelfLifeDays: 0,
+  fridgeShelfLifeDays: 2,
+  freezerShelfLifeDays: 270,
+  purchasedAt: new Date(),
+  tempC: 20,
+  humidity: 50
+}
+
+const roomStorage = {
+  storageMethodName: 'Room Temperature',
+  tempMinC: 15,
+  tempMaxC: 25,
+  humidityPreferred: 50
+}
+
+const fridgeStorage = {
+  storageMethodName: 'Refrigerator',
+  tempMinC: 0,
+  tempMaxC: 4,
+  humidityPreferred: 60
+}
+
+console.log('--- Testing Room Temp ---')
+const resRoom = predict({ ...chicken, ...roomStorage })
+console.log('Expiry:', resRoom)
+
+console.log('\n--- Testing Fridge ---')
+const resFridge = predict({ ...chicken, ...fridgeStorage })
+console.log('Expiry:', resFridge)

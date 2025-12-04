@@ -103,31 +103,31 @@ export default function WeatherChip() {
   const tooltip = weather.locationName ? `${weather.locationName} • Updated ${lastUpdated ? new Date(lastUpdated).toLocaleTimeString() : ''}` : userCity
   const isStale = lastUpdated ? (Date.now() - lastUpdated) > 15 * 60 * 1000 : false
   return (
-    <div className="flex items-center gap-3 px-3 py-1.5 bg-white/90 backdrop-blur-sm rounded-full shadow-sm border border-green-100" title={tooltip}>
+    <div className="flex items-center gap-3 px-3 py-1.5 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full shadow-sm border border-green-100 dark:border-green-900" title={tooltip}>
       <div className="flex items-center gap-1">
         <span className="text-xl">🌡️</span>
-        <span className="text-sm font-medium text-gray-700">{weather.tempC.toFixed(1)}°C</span>
+        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{weather.tempC.toFixed(1)}°C</span>
       </div>
-      <div className="w-px h-4 bg-gray-300"/>
+      <div className="w-px h-4 bg-gray-300 dark:bg-gray-600"/>
       <div className="flex items-center gap-1">
         <span className="text-xl">💧</span>
-        <span className="text-sm font-medium text-gray-700">{Math.round(weather.humidity)}%</span>
+        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{Math.round(weather.humidity)}%</span>
       </div>
       {typeof weather.feelsLikeC === 'number' && (
         <>
-          <div className="w-px h-4 bg-gray-300"/>
-          <span className="text-xs text-gray-600">feels {weather.feelsLikeC.toFixed(1)}°C</span>
+          <div className="w-px h-4 bg-gray-300 dark:bg-gray-600"/>
+          <span className="text-xs text-gray-600 dark:text-gray-400">feels {weather.feelsLikeC.toFixed(1)}°C</span>
         </>
       )}
       {weather.locationName && (
         <>
-          <div className="w-px h-4 bg-gray-300"/>
-          <span className="text-xs text-gray-600 font-medium">{weather.locationName.split(',')[0]}</span>
+          <div className="w-px h-4 bg-gray-300 dark:bg-gray-600"/>
+          <span className="text-xs text-gray-600 dark:text-gray-400 font-medium">{weather.locationName.split(',')[0]}</span>
         </>
       )}
       <button
         onClick={fetchWeather}
-        className={`ml-1 text-xs px-2 py-1 rounded-md border ${isStale ? 'border-orange-300 text-orange-700 bg-orange-50' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+        className={`ml-1 text-xs px-2 py-1 rounded-md border ${isStale ? 'border-orange-300 text-orange-700 bg-orange-50 dark:bg-orange-900/20 dark:text-orange-300 dark:border-orange-800' : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'}`}
         aria-label="Refresh weather"
         title={isStale ? 'Data may be stale (>15m). Click to refresh.' : 'Refresh now'}
       >↻</button>

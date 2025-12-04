@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import Card from '@/components/ui/Card'
-import Button from '@/components/ui/Button'
+import { Button } from '@/components/ui/button'
 import { getApiBaseUrl } from '@/lib/api'
 
 export default function InsightsLocationWeather() {
@@ -10,6 +10,7 @@ export default function InsightsLocationWeather() {
   const [saving, setSaving] = useState(false)
   const [msg, setMsg] = useState('')
   const [weather, setWeather] = useState<{ tempC: number; humidity: number; locationName?: string } | null>(null)
+  const [fetchingWeather, setFetchingWeather] = useState(false)
 
   useEffect(() => {
     // Load user city
@@ -32,7 +33,9 @@ export default function InsightsLocationWeather() {
   }, [])
 
   const fetchWeather = async (targetCity: string) => {
+    setFetchingWeather(true)
     try {
+      console.log('Fetching weather for:', targetCity)
       const baseUrl = getApiBaseUrl()
       const r = await fetch(`${baseUrl}/api/weather/current?city=${encodeURIComponent(targetCity)}&t=${Date.now()}`, {
         cache: 'no-store',
@@ -41,9 +44,14 @@ export default function InsightsLocationWeather() {
       if (r.ok) {
         const data = await r.json()
         setWeather({ tempC: data.tempC, humidity: data.humidity, locationName: data.locationName || targetCity })
+      } else {
+        setMsg('Weather service unavailable')
       }
     } catch (e) {
       console.error('Weather fetch failed', e)
+      setMsg('Failed to fetch weather data')
+    } finally {
+      setFetchingWeather(false)
     }
   }
 
@@ -114,15 +122,15 @@ export default function InsightsLocationWeather() {
     <Card>
       <div className="flex flex-col md:flex-row md:items-end gap-4">
         <div className="flex-1">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Insights Location</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Insights Location</label>
           <input
             type="text"
             value={city}
             onChange={(e) => setCity(e.target.value)}
             placeholder="e.g., Mumbai, Delhi, Bengaluru"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
           />
-          <p className="text-xs text-gray-500 mt-1">Used for weather-based analytics and shown in the navbar.</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Used for weather-based analytics and shown in the navbar.</p>
         </div>
         <div className="flex gap-2">
           <Button onClick={handleDetect} className="bg-blue-600 hover:bg-blue-700">📍 Detect</Button>
@@ -131,25 +139,29 @@ export default function InsightsLocationWeather() {
       </div>
 
       {msg && (
-        <div className="mt-3 p-3 rounded-lg bg-blue-50 border border-blue-200 text-blue-800 text-sm">{msg}</div>
+        <div className="mt-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-300 text-sm">{msg}</div>
       )}
 
       <div className="mt-5 grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="p-4 bg-white rounded-lg border border-gray-200 text-center">
-          <div className="text-xs text-gray-500 uppercase">Temperature</div>
-          <div className="text-2xl font-bold text-green-700">{weather ? Math.round(weather.tempC) : '-'}°C</div>
+        <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 text-center">
+          <div className="text-xs text-gray-500 dark:text-gray-400 uppercase">Temperature</div>
+          <div className="text-2xl font-bold text-green-700 dark:text-green-400">
+            {fetchingWeather ? '...' : (weather ? `${Math.round(weather.tempC)}°C` : '-')}
+          </div>
         </div>
-        <div className="p-4 bg-white rounded-lg border border-gray-200 text-center">
-          <div className="text-xs text-gray-500 uppercase">Humidity</div>
-          <div className="text-2xl font-bold text-green-700">{weather ? Math.round(weather.humidity) : '-'}%</div>
+        <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 text-center">
+          <div className="text-xs text-gray-500 dark:text-gray-400 uppercase">Humidity</div>
+          <div className="text-2xl font-bold text-green-700 dark:text-green-400">
+            {fetchingWeather ? '...' : (weather ? `${Math.round(weather.humidity)}%` : '-')}
+          </div>
         </div>
-        <div className="p-4 bg-white rounded-lg border border-gray-200 text-center">
-          <div className="text-xs text-gray-500 uppercase">Location</div>
-          <div className="text-base font-medium text-gray-800">{weather?.locationName || city || '-'}</div>
+        <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 text-center">
+          <div className="text-xs text-gray-500 dark:text-gray-400 uppercase">Location</div>
+          <div className="text-base font-medium text-gray-800 dark:text-gray-200">{weather?.locationName || city || '-'}</div>
         </div>
-        <div className="p-4 bg-white rounded-lg border border-gray-200 text-center">
-          <div className="text-xs text-gray-500 uppercase">Updated</div>
-          <div className="text-base font-medium text-gray-800">{new Date().toLocaleTimeString()}</div>
+        <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 text-center">
+          <div className="text-xs text-gray-500 dark:text-gray-400 uppercase">Updated</div>
+          <div className="text-base font-medium text-gray-800 dark:text-gray-200">{new Date().toLocaleTimeString()}</div>
         </div>
       </div>
     </Card>

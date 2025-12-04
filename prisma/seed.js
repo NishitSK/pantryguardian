@@ -45,6 +45,72 @@ async function main() {
 
   console.log('✅ Storage methods created')
 
+  // Create Recipes
+  const recipes = [
+    {
+      title: "Classic Tomato Pasta",
+      description: "A simple yet delicious pasta dish with fresh tomatoes and basil.",
+      instructions: "Boil pasta. Sauté garlic and tomatoes. Mix and serve with basil.",
+      ingredients: ["Pasta", "Tomato", "Garlic", "Basil", "Olive Oil", "Salt"]
+    },
+    {
+      title: "Vegetable Stir Fry",
+      description: "Quick and healthy stir fry with mixed vegetables.",
+      instructions: "Chop vegetables. Stir fry in hot oil with soy sauce. Serve over rice.",
+      ingredients: ["Rice", "Carrot", "Broccoli", "Bell Pepper", "Soy Sauce", "Ginger", "Garlic"]
+    },
+    {
+      title: "Banana Pancakes",
+      description: "Fluffy pancakes made with ripe bananas.",
+      instructions: "Mash bananas. Mix with flour, eggs, and milk. Cook on griddle.",
+      ingredients: ["Banana", "Flour", "Egg", "Milk", "Butter", "Maple Syrup"]
+    },
+    {
+      title: "Chicken Salad",
+      description: "Fresh salad with grilled chicken breast.",
+      instructions: "Grill chicken. Toss lettuce, cucumber, and tomatoes. Top with chicken and dressing.",
+      ingredients: ["Chicken Breast", "Lettuce", "Cucumber", "Tomato", "Olive Oil", "Lemon"]
+    },
+    {
+      title: "Omelette",
+      description: "Classic breakfast omelette with cheese and herbs.",
+      instructions: "Whisk eggs. Pour into pan. Add cheese and fold.",
+      ingredients: ["Egg", "Cheese", "Butter", "Salt", "Pepper", "Chives"]
+    },
+    {
+      title: "Fruit Salad",
+      description: "Refreshing mix of seasonal fruits.",
+      ingredients: ["Apple", "Banana", "Orange", "Grapes", "Yogurt", "Honey"],
+      instructions: "Chop all fruits. Mix in a bowl. Drizzle with honey and yogurt."
+    },
+    {
+      title: "Grilled Cheese Sandwich",
+      description: "Comfort food at its best.",
+      ingredients: ["Bread", "Cheese", "Butter"],
+      instructions: "Butter bread. Place cheese between slices. Grill until golden."
+    },
+    {
+      title: "Potato Soup",
+      description: "Creamy and warming potato soup.",
+      ingredients: ["Potato", "Onion", "Garlic", "Cream", "Vegetable Broth", "Bacon"],
+      instructions: "Sauté onions. Add potatoes and broth. Simmer. Blend and add cream."
+    }
+  ]
+
+  for (const recipe of recipes) {
+    await prisma.recipe.create({
+      data: {
+        title: recipe.title,
+        description: recipe.description,
+        instructions: recipe.instructions,
+        ingredients: {
+          create: recipe.ingredients.map(name => ({ name }))
+        }
+      }
+    })
+  }
+  console.log('✅ Recipes created')
+
   // Create demo user
   const hashedPassword = await bcrypt.hash('demo1234', 12)
   
@@ -67,32 +133,32 @@ async function main() {
     { name: 'Apples', category: 'Fresh Fruits', base: 7, room: 7, fridge: 28, freezer: 365, storage: 'room', notes: 'Store in cool, dark place' },
     { name: 'Bananas', category: 'Fresh Fruits', base: 5, room: 5, fridge: 7, freezer: 180, storage: 'room', notes: 'Keep at room temperature until ripe' },
     { name: 'Oranges', category: 'Fresh Fruits', base: 10, room: 10, fridge: 28, freezer: 365, storage: 'room', notes: 'Store in cool place' },
-    { name: 'Strawberries', category: 'Fresh Fruits', base: 3, room: 2, fridge: 7, freezer: 180, storage: 'fridge', notes: 'Highly perishable' },
-    { name: 'Grapes', category: 'Fresh Fruits', base: 5, room: 3, fridge: 14, freezer: 365, storage: 'fridge', notes: 'Refrigerate unwashed' },
+    { name: 'Strawberries', category: 'Fresh Fruits', base: 3, room: 1, fridge: 7, freezer: 180, storage: 'fridge', notes: 'Highly perishable' },
+    { name: 'Grapes', category: 'Fresh Fruits', base: 5, room: 2, fridge: 14, freezer: 365, storage: 'fridge', notes: 'Refrigerate unwashed' },
     { name: 'Watermelon', category: 'Fresh Fruits', base: 7, room: 7, fridge: 14, freezer: 365, storage: 'room', notes: 'Whole melons last longer' },
     { name: 'Mangoes', category: 'Fresh Fruits', base: 5, room: 5, fridge: 7, freezer: 180, storage: 'room', notes: 'Ripen at room temp' },
     { name: 'Pineapple', category: 'Fresh Fruits', base: 5, room: 5, fridge: 7, freezer: 180, storage: 'room', notes: 'Cut pineapple needs fridge' },
-    { name: 'Blueberries', category: 'Fresh Fruits', base: 5, room: 2, fridge: 10, freezer: 180, storage: 'fridge', notes: 'Very delicate' },
+    { name: 'Blueberries', category: 'Fresh Fruits', base: 5, room: 1, fridge: 10, freezer: 180, storage: 'fridge', notes: 'Very delicate' },
     { name: 'Peaches', category: 'Fresh Fruits', base: 4, room: 4, fridge: 7, freezer: 180, storage: 'room', notes: 'Ripen at room temp' },
     { name: 'Pears', category: 'Fresh Fruits', base: 5, room: 5, fridge: 14, freezer: 180, storage: 'room', notes: 'Ripen off tree' },
-    { name: 'Cherries', category: 'Fresh Fruits', base: 3, room: 2, fridge: 10, freezer: 180, storage: 'fridge', notes: 'Keep cold and dry' },
+    { name: 'Cherries', category: 'Fresh Fruits', base: 3, room: 1, fridge: 10, freezer: 180, storage: 'fridge', notes: 'Keep cold and dry' },
     { name: 'Kiwi', category: 'Fresh Fruits', base: 7, room: 7, fridge: 28, freezer: 180, storage: 'room', notes: 'Store with apples to ripen' },
     { name: 'Plums', category: 'Fresh Fruits', base: 4, room: 4, fridge: 7, freezer: 180, storage: 'room', notes: 'Ripen at room temp' },
     { name: 'Papaya', category: 'Fresh Fruits', base: 5, room: 5, fridge: 7, freezer: 180, storage: 'room', notes: 'Tropical fruit' },
 
     // Fresh Vegetables (20 items)
     { name: 'Tomatoes', category: 'Fresh Vegetables', base: 7, room: 7, fridge: 14, freezer: 180, storage: 'room', notes: 'Best flavor at room temp' },
-    { name: 'Lettuce', category: 'Fresh Vegetables', base: 5, room: 2, fridge: 10, freezer: 0, storage: 'fridge', notes: 'Wash before storing' },
+    { name: 'Lettuce', category: 'Fresh Vegetables', base: 5, room: 0, fridge: 10, freezer: 0, storage: 'fridge', notes: 'Wash before storing' },
     { name: 'Carrots', category: 'Fresh Vegetables', base: 14, room: 7, fridge: 28, freezer: 365, storage: 'fridge', notes: 'Remove greens before storing' },
-    { name: 'Broccoli', category: 'Fresh Vegetables', base: 5, room: 2, fridge: 7, freezer: 365, storage: 'fridge', notes: 'Store unwashed' },
+    { name: 'Broccoli', category: 'Fresh Vegetables', base: 5, room: 1, fridge: 7, freezer: 365, storage: 'fridge', notes: 'Store unwashed' },
     { name: 'Bell Peppers', category: 'Fresh Vegetables', base: 7, room: 5, fridge: 14, freezer: 180, storage: 'fridge', notes: 'Keep in crisper' },
     { name: 'Cucumbers', category: 'Fresh Vegetables', base: 7, room: 5, fridge: 10, freezer: 0, storage: 'fridge', notes: 'Sensitive to cold' },
-    { name: 'Spinach', category: 'Fresh Vegetables', base: 5, room: 1, fridge: 7, freezer: 180, storage: 'fridge', notes: 'Highly perishable' },
+    { name: 'Spinach', category: 'Fresh Vegetables', base: 5, room: 0, fridge: 7, freezer: 180, storage: 'fridge', notes: 'Highly perishable' },
     { name: 'Potatoes', category: 'Fresh Vegetables', base: 30, room: 30, fridge: 90, freezer: 365, storage: 'room', notes: 'Store in dark, cool place' },
     { name: 'Onions', category: 'Fresh Vegetables', base: 30, room: 30, fridge: 60, freezer: 180, storage: 'room', notes: 'Keep dry and ventilated' },
     { name: 'Garlic', category: 'Fresh Vegetables', base: 60, room: 60, fridge: 90, freezer: 365, storage: 'room', notes: 'Store in cool, dry place' },
     { name: 'Zucchini', category: 'Fresh Vegetables', base: 5, room: 3, fridge: 7, freezer: 180, storage: 'fridge', notes: 'Do not wash before storing' },
-    { name: 'Cauliflower', category: 'Fresh Vegetables', base: 5, room: 2, fridge: 7, freezer: 365, storage: 'fridge', notes: 'Store in crisper' },
+    { name: 'Cauliflower', category: 'Fresh Vegetables', base: 5, room: 1, fridge: 7, freezer: 365, storage: 'fridge', notes: 'Store in crisper' },
     { name: 'Cabbage', category: 'Fresh Vegetables', base: 14, room: 7, fridge: 28, freezer: 180, storage: 'fridge', notes: 'Long lasting vegetable' },
     { name: 'Celery', category: 'Fresh Vegetables', base: 7, room: 2, fridge: 14, freezer: 180, storage: 'fridge', notes: 'Wrap in foil' },
     { name: 'Mushrooms', category: 'Fresh Vegetables', base: 5, room: 1, fridge: 7, freezer: 180, storage: 'fridge', notes: 'Store in paper bag' },
@@ -154,7 +220,7 @@ async function main() {
     { name: 'White Bread', category: 'Bakery', base: 5, room: 5, fridge: 14, freezer: 180, storage: 'room', notes: 'Store in cool, dry place' },
     { name: 'Whole Wheat Bread', category: 'Bakery', base: 7, room: 7, fridge: 14, freezer: 180, storage: 'room', notes: 'More oil, lasts longer' },
     { name: 'Croissants', category: 'Bakery', base: 2, room: 2, fridge: 7, freezer: 60, storage: 'room', notes: 'Best fresh' },
-    { name: 'Bagels', category: 'Bakery', base: 5, room: 5, fridge: 14, freezer: 180, storage: 'room', notes: 'Dense bread' },
+    { name: 'Bagels', category: 'Bakery', base: 5, room: 3, fridge: 14, freezer: 180, storage: 'room', notes: 'Dense bread' },
     { name: 'Muffins', category: 'Bakery', base: 3, room: 3, fridge: 7, freezer: 90, storage: 'room', notes: 'Sweet baked goods' },
     { name: 'Baguette', category: 'Bakery', base: 1, room: 1, fridge: 3, freezer: 90, storage: 'room', notes: 'Eat same day' },
     { name: 'Donuts', category: 'Bakery', base: 2, room: 2, fridge: 7, freezer: 60, storage: 'room', notes: 'Cream-filled need fridge' },
@@ -209,22 +275,22 @@ async function main() {
     { name: 'Sparkling Water', category: 'Beverages', base: 365, room: 365, fridge: 365, freezer: 0, storage: 'room', notes: 'Carbonated water' },
     { name: 'Iced Tea', category: 'Beverages', base: 270, room: 270, fridge: 270, freezer: 0, storage: 'room', notes: 'Bottled tea' },
     { name: 'Energy Drink', category: 'Beverages', base: 365, room: 365, fridge: 365, freezer: 0, storage: 'room', notes: 'High caffeine' },
-    { name: 'Coconut Water', category: 'Beverages', base: 270, room: 270, fridge: 7, freezer: 0, storage: 'fridge', notes: 'Refrigerate after opening' },
+    { name: 'Coconut Water', category: 'Beverages', base: 270, room: 0, fridge: 7, freezer: 0, storage: 'fridge', notes: 'Refrigerate after opening' },
     { name: 'Almond Milk', category: 'Beverages', base: 7, room: 0, fridge: 7, freezer: 90, storage: 'fridge', notes: 'Dairy alternative' },
 
     // Condiments & Sauces (12 items)
-    { name: 'Ketchup', category: 'Condiments & Sauces', base: 365, room: 365, fridge: 730, freezer: 0, storage: 'fridge', notes: 'Refrigerate after opening' },
-    { name: 'Mustard', category: 'Condiments & Sauces', base: 365, room: 365, fridge: 730, freezer: 0, storage: 'fridge', notes: 'Long lasting' },
+    { name: 'Ketchup', category: 'Condiments & Sauces', base: 365, room: 30, fridge: 730, freezer: 0, storage: 'fridge', notes: 'Refrigerate after opening' },
+    { name: 'Mustard', category: 'Condiments & Sauces', base: 365, room: 30, fridge: 730, freezer: 0, storage: 'fridge', notes: 'Long lasting' },
     { name: 'Mayonnaise', category: 'Condiments & Sauces', base: 60, room: 0, fridge: 60, freezer: 0, storage: 'fridge', notes: 'Keep cold' },
-    { name: 'Hot Sauce', category: 'Condiments & Sauces', base: 730, room: 730, fridge: 1095, freezer: 0, storage: 'room', notes: 'Spicy and preserved' },
-    { name: 'BBQ Sauce', category: 'Condiments & Sauces', base: 180, room: 180, fridge: 365, freezer: 0, storage: 'fridge', notes: 'Sweet and tangy' },
-    { name: 'Sriracha', category: 'Condiments & Sauces', base: 730, room: 730, fridge: 1095, freezer: 0, storage: 'room', notes: 'Chili sauce' },
+    { name: 'Hot Sauce', category: 'Condiments & Sauces', base: 730, room: 30, fridge: 1095, freezer: 0, storage: 'room', notes: 'Spicy and preserved' },
+    { name: 'BBQ Sauce', category: 'Condiments & Sauces', base: 180, room: 30, fridge: 365, freezer: 0, storage: 'fridge', notes: 'Sweet and tangy' },
+    { name: 'Sriracha', category: 'Condiments & Sauces', base: 730, room: 30, fridge: 1095, freezer: 0, storage: 'room', notes: 'Chili sauce' },
     { name: 'Salsa', category: 'Condiments & Sauces', base: 30, room: 0, fridge: 30, freezer: 180, storage: 'fridge', notes: 'Fresh ingredients' },
     { name: 'Hummus', category: 'Condiments & Sauces', base: 7, room: 0, fridge: 7, freezer: 180, storage: 'fridge', notes: 'Chickpea dip' },
     { name: 'Pesto', category: 'Condiments & Sauces', base: 7, room: 0, fridge: 14, freezer: 180, storage: 'fridge', notes: 'Basil sauce' },
     { name: 'Ranch Dressing', category: 'Condiments & Sauces', base: 60, room: 0, fridge: 60, freezer: 0, storage: 'fridge', notes: 'Creamy dressing' },
-    { name: 'Teriyaki Sauce', category: 'Condiments & Sauces', base: 365, room: 365, fridge: 730, freezer: 0, storage: 'room', notes: 'Asian sauce' },
-    { name: 'Worcestershire Sauce', category: 'Condiments & Sauces', base: 730, room: 730, fridge: 1095, freezer: 0, storage: 'room', notes: 'Fermented sauce' },
+    { name: 'Teriyaki Sauce', category: 'Condiments & Sauces', base: 365, room: 30, fridge: 730, freezer: 0, storage: 'room', notes: 'Asian sauce' },
+    { name: 'Worcestershire Sauce', category: 'Condiments & Sauces', base: 730, room: 30, fridge: 1095, freezer: 0, storage: 'room', notes: 'Fermented sauce' },
 
     // Snacks (10 items)
     { name: 'Potato Chips', category: 'Snacks', base: 90, room: 90, fridge: 180, freezer: 365, storage: 'room', notes: 'Keep sealed' },
@@ -239,12 +305,12 @@ async function main() {
     { name: 'Protein Bar', category: 'Snacks', base: 365, room: 365, fridge: 730, freezer: 730, storage: 'room', notes: 'Fitness food' },
 
     // Eggs & Tofu (6 items)
-    { name: 'Eggs', category: 'Eggs & Tofu', base: 28, room: 7, fridge: 35, freezer: 365, storage: 'fridge', notes: 'Keep in carton' },
+    { name: 'Eggs', category: 'Eggs & Tofu', base: 28, room: 0, fridge: 35, freezer: 365, storage: 'fridge', notes: 'Keep in carton' },
     { name: 'Tofu', category: 'Eggs & Tofu', base: 7, room: 0, fridge: 7, freezer: 180, storage: 'fridge', notes: 'Keep in water' },
     { name: 'Silken Tofu', category: 'Eggs & Tofu', base: 5, room: 0, fridge: 5, freezer: 90, storage: 'fridge', notes: 'Soft texture' },
     { name: 'Egg Whites', category: 'Eggs & Tofu', base: 7, room: 0, fridge: 7, freezer: 365, storage: 'fridge', notes: 'Liquid form' },
     { name: 'Tempeh', category: 'Eggs & Tofu', base: 10, room: 0, fridge: 10, freezer: 365, storage: 'fridge', notes: 'Fermented soy' },
-    { name: 'Quail Eggs', category: 'Eggs & Tofu', base: 21, room: 5, fridge: 28, freezer: 365, storage: 'fridge', notes: 'Small eggs' },
+    { name: 'Quail Eggs', category: 'Eggs & Tofu', base: 21, room: 0, fridge: 28, freezer: 365, storage: 'fridge', notes: 'Small eggs' },
   ]
 
   // Create products with proper storage method associations
@@ -263,7 +329,22 @@ async function main() {
       where: { name: p.name }
     })
     
-    if (!existing) {
+    if (existing) {
+      // Update existing product with new shelf life data
+      await prisma.product.update({
+        where: { id: existing.id },
+        data: {
+          category: p.category,
+          baseShelfLifeDays: p.base,
+          roomTempShelfLifeDays: p.room,
+          fridgeShelfLifeDays: p.fridge,
+          freezerShelfLifeDays: p.freezer,
+          storageNotes: p.notes,
+          defaultStorageMethodId: storageId
+        }
+      })
+    } else {
+      // Create new product
       await prisma.product.create({
         data: {
           name: p.name,

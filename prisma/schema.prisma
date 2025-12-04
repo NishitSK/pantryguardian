@@ -89,3 +89,19 @@ model Feedback {
   notes               String?
   createdAt           DateTime      @default(now())
 }
+
+model Recipe {
+  id           String             @id @default(cuid())
+  title        String
+  description  String
+  instructions String?
+  ingredients  RecipeIngredient[]
+  createdAt    DateTime           @default(now())
+}
+
+model RecipeIngredient {
+  id       String @id @default(cuid())
+  name     String
+  recipeId String
+  recipe   Recipe @relation(fields: [recipeId], references: [id])
+}

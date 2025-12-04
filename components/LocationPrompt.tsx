@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Card from './ui/Card'
-import Button from './ui/Button'
+import { Button } from './ui/button'
 import { getApiBaseUrl } from '@/lib/api'
 import { detectUserCity } from '@/lib/geolocation'
 

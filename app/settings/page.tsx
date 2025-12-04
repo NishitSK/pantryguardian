@@ -2,9 +2,10 @@
 import { useSession } from 'next-auth/react'
 import { redirect } from 'next/navigation'
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import SectionHeading from '@/components/ui/SectionHeading'
 import Card from '@/components/ui/Card'
-import Button from '@/components/ui/Button'
+import { Button } from '@/components/ui/button'
 import { getApiBaseUrl } from '@/lib/api'
 import { detectUserCity } from '@/lib/geolocation'
 
@@ -99,45 +100,46 @@ export default function SettingsPage() {
     <main className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <SectionHeading>Settings</SectionHeading>
-        <p className="text-gray-600 mt-2">Manage your account and preferences</p>
+        <p className="text-gray-600 dark:text-gray-400 mt-2">Manage your account and preferences</p>
       </div>
 
-      <div className="max-w-2xl space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 space-y-6">
         {message && (
-          <div className={`p-4 rounded-lg ${message.includes('success') ? 'bg-green-50 border border-green-200 text-green-700' : 'bg-red-50 border border-red-200 text-red-700'}`}>
+          <div className={`p-4 rounded-lg ${message.includes('success') ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300' : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300'}`}>
             {message}
           </div>
         )}
 
         <Card>
-          <h3 className="font-semibold text-lg mb-4">Account Information</h3>
+          <h3 className="font-semibold text-lg mb-4 text-gray-900 dark:text-white">Account Information</h3>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Name
               </label>
               <input
                 type="text"
                 value={session?.user?.name || ''}
                 disabled
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-600"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Email
               </label>
               <input
                 type="email"
                 value={session?.user?.email || ''}
                 disabled
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-600"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Location (City)
               </label>
               <div className="flex gap-2 mb-2">
@@ -146,7 +148,7 @@ export default function SettingsPage() {
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                   placeholder="e.g., London, Mumbai, New York"
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                 />
                 <Button onClick={handleUpdateCity} disabled={saving}>
                   {saving ? 'Saving...' : 'Update'}
@@ -156,12 +158,12 @@ export default function SettingsPage() {
                 <button
                   type="button"
                   onClick={handleDetectLocation}
-                  className="text-sm text-green-600 hover:text-green-700 font-medium flex items-center gap-1"
+                  className="text-sm text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 font-medium flex items-center gap-1"
                 >
                   📍 Detect my location
                 </button>
               </div>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 Used for weather-based shelf life predictions
               </p>
             </div>
@@ -169,24 +171,24 @@ export default function SettingsPage() {
         </Card>
 
         <Card>
-          <h3 className="font-semibold text-lg mb-4">Prediction Model</h3>
+          <h3 className="font-semibold text-lg mb-4 text-gray-900 dark:text-white">Prediction Model</h3>
           <div className="space-y-4">
-            <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+            <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
               <div className="flex items-center justify-between mb-2">
-                <span className="font-medium text-green-900">Rule-Based Model v1.1</span>
+                <span className="font-medium text-green-900 dark:text-green-100">Rule-Based Model v1.1</span>
                 <span className="px-2 py-1 bg-green-600 text-white text-xs rounded-full">
                   Active
                 </span>
               </div>
-              <p className="text-sm text-green-800">
+              <p className="text-sm text-green-800 dark:text-green-200">
                 Storage-aware shelf life predictions with room temperature, refrigerator, 
                 and freezer-specific calculations.
               </p>
             </div>
 
             <div className="space-y-2">
-              <h4 className="font-medium text-sm text-gray-700">Features:</h4>
-              <ul className="text-sm text-gray-600 space-y-1 ml-4">
+              <h4 className="font-medium text-sm text-gray-700 dark:text-gray-300">Features:</h4>
+              <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1 ml-4">
                 <li>• Storage method-specific shelf life</li>
                 <li>• Temperature and humidity adjustments</li>
                 <li>• Opened item penalty calculations</li>
@@ -198,12 +200,12 @@ export default function SettingsPage() {
         </Card>
 
         <Card>
-          <h3 className="font-semibold text-lg mb-4">Date Format</h3>
+          <h3 className="font-semibold text-lg mb-4 text-gray-900 dark:text-white">Date Format</h3>
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <div className="flex items-center justify-between p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
               <div>
-                <p className="font-medium text-blue-900">Indian Format (DD/MM/YY)</p>
-                <p className="text-sm text-blue-800 mt-1">
+                <p className="font-medium text-blue-900 dark:text-blue-100">Indian Format (DD/MM/YY)</p>
+                <p className="text-sm text-blue-800 dark:text-blue-200 mt-1">
                   Example: 10/11/25 for November 10, 2025
                 </p>
               </div>
@@ -215,27 +217,27 @@ export default function SettingsPage() {
         </Card>
 
         <Card>
-          <h3 className="font-semibold text-lg mb-4">About</h3>
+          <h3 className="font-semibold text-lg mb-4 text-gray-900 dark:text-white">About</h3>
           <div className="space-y-3">
             <div>
-              <p className="text-sm font-medium text-gray-700">Pantry Guardian</p>
-              <p className="text-xs text-gray-600">Intelligent Grocery Shelf-Life & Pantry Manager</p>
+              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Pantry Guardian</p>
+              <p className="text-xs text-gray-600 dark:text-gray-400">Intelligent Grocery Shelf-Life & Pantry Manager</p>
             </div>
 
-            <div className="pt-3 border-t border-gray-200">
-              <p className="text-sm text-gray-600">
+            <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 <span className="font-medium">Version:</span> 1.0.0
               </p>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 <span className="font-medium">Model:</span> rb-1.1 (Rule-Based)
               </p>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 <span className="font-medium">Database:</span> 159 Products across 12 categories
               </p>
             </div>
 
-            <div className="pt-3 border-t border-gray-200">
-              <p className="text-xs text-gray-500">
+            <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
+              <p className="text-xs text-gray-500 dark:text-gray-400">
                 This application uses advanced prediction algorithms to help reduce food waste 
                 by providing accurate expiry date predictions based on storage conditions, 
                 product characteristics, and environmental factors.
@@ -243,6 +245,24 @@ export default function SettingsPage() {
             </div>
           </div>
         </Card>
+        </div>
+
+        <div className="hidden lg:block sticky top-24 h-fit">
+          <div className="relative w-full aspect-[3/4] rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-lg">
+            <Image
+              src="https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=1000&auto=format&fit=crop"
+              alt="Pantry organization"
+              fill
+              className="object-cover"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end p-6">
+              <p className="text-white font-medium text-lg">
+                "Organizing is what you do before you do something, so that when you do it, it is not all mixed up."
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
   )

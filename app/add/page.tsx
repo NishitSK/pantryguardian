@@ -1,9 +1,12 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, ReferenceLine } from 'recharts'
 import Card from '@/components/ui/Card'
-import Button from '@/components/ui/Button'
+import { Button } from '@/components/ui/button'
 import SectionHeading from '@/components/ui/SectionHeading'
+import CustomSelect, { SelectOption } from '@/components/ui/CustomSelect'
+import LoadingFruit from '@/components/ui/loading-fruit'
 import { formatIndianDate } from '@/lib/dateUtils'
 import { getApiBaseUrl } from '@/lib/api'
 
@@ -25,6 +28,28 @@ type StorageMethod = {
   tempRangeMinC: number
   tempRangeMaxC: number
   humidityPreferred: number
+}
+
+const getCategoryIcon = (category: string) => {
+  const map: Record<string, string> = {
+    'Bakery': '🥖',
+    'Beverages': '🥤',
+    'Condiments & Sauces': '🥫',
+    'Dairy': '🥛',
+    'Eggs & Tofu': '🥚',
+    'Fresh Fruits': '🍎',
+    'Fresh Vegetables': '🥦',
+    'Frozen Foods': '❄️',
+    'Meat & Poultry': '🥩',
+    'Pantry Staples': '🍚',
+    'Seafood': '🐟',
+    'Snacks': '🍿',
+    'Grains & Pasta': '🍝',
+    'Canned Goods': '🥫',
+    'Breakfast': '🥣',
+    'Herbs & Spices': '🌿'
+  }
+  return map[category] || '📦'
 }
 
 export default function AddItemPage() {
@@ -99,11 +124,11 @@ export default function AddItemPage() {
     let shelfLifeDays = product.baseShelfLifeDays
     const methodLower = storage.name.toLowerCase()
 
-    if (methodLower.includes('room') && product.roomTempShelfLifeDays) {
+    if (methodLower.includes('room') && product.roomTempShelfLifeDays !== null) {
       shelfLifeDays = product.roomTempShelfLifeDays
-    } else if (methodLower.includes('fridge') && product.fridgeShelfLifeDays) {
+    } else if ((methodLower.includes('fridge') || methodLower.includes('refrig')) && product.fridgeShelfLifeDays !== null) {
       shelfLifeDays = product.fridgeShelfLifeDays
-    } else if (methodLower.includes('freezer') && product.freezerShelfLifeDays) {
+    } else if (methodLower.includes('freezer') && product.freezerShelfLifeDays !== null) {
       shelfLifeDays = product.freezerShelfLifeDays
     }
 
@@ -160,8 +185,8 @@ export default function AddItemPage() {
 
   if (loading) {
     return (
-      <main className="container mx-auto px-4 py-8">
-        <p>Loading...</p>
+      <main className="container mx-auto px-4 py-8 min-h-[60vh] flex items-center justify-center">
+        <LoadingFruit />
       </main>
     )
   }
@@ -170,11 +195,11 @@ export default function AddItemPage() {
     <main className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <SectionHeading>Add New Item</SectionHeading>
-        <p className="text-gray-600 mt-2">Add groceries to your inventory with smart expiry predictions</p>
+        <p className="text-gray-600 dark:text-gray-400 mt-2">Add groceries to your inventory with smart expiry predictions</p>
       </div>
 
       {error && (
-        <div className="mb-6 p-4 rounded-lg bg-red-50 border border-red-200 text-red-700">
+        <div className="mb-6 p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300">
           {error}
         </div>
       )}
@@ -184,71 +209,68 @@ export default function AddItemPage() {
           <Card>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Category
                 </label>
-                <select
+                <CustomSelect
                   value={selectedCategory}
-                  onChange={(e) => {
-                    setSelectedCategory(e.target.value)
+                  onChange={(val) => {
+                    setSelectedCategory(val)
                     setSelectedProductId('')
                   }}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                >
-                  <option value="">Select a category</option>
-                  {categories.map(cat => (
-                    <option key={cat} value={cat}>{cat}</option>
-                  ))}
-                </select>
+                  options={categories.map(cat => ({
+                    label: cat,
+                    value: cat,
+                    icon: getCategoryIcon(cat)
+                  }))}
+                  placeholder="Select a category"
+                />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Product
                 </label>
-                <select
+                <CustomSelect
                   value={selectedProductId}
-                  onChange={(e) => setSelectedProductId(e.target.value)}
-                  required
+                  onChange={(val) => setSelectedProductId(val)}
                   disabled={!selectedCategory}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-100"
-                >
-                  <option value="">Select a product</option>
-                  {filteredProducts.map(product => (
-                    <option key={product.id} value={product.id}>{product.name}</option>
-                  ))}
-                </select>
+                  options={filteredProducts.map(product => ({
+                    label: product.name,
+                    value: product.id
+                  }))}
+                  placeholder="Select a product"
+                />
               </div>
 
               {selectedProduct?.storageNotes && (
-                <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                  <p className="text-sm text-blue-800">
+                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                  <p className="text-sm text-blue-800 dark:text-blue-300">
                     💡 <span className="font-medium">Storage Tip:</span> {selectedProduct.storageNotes}
                   </p>
                 </div>
               )}
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Storage Method
                 </label>
-                <select
+                <CustomSelect
                   value={selectedStorageId}
-                  onChange={(e) => setSelectedStorageId(e.target.value)}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                >
-                  <option value="">Select storage method</option>
-                  {storageMethods.map(method => (
-                    <option key={method.id} value={method.id}>{method.name}</option>
-                  ))}
-                </select>
+                  onChange={(val) => setSelectedStorageId(val)}
+                  options={storageMethods.map(method => ({
+                    label: method.name,
+                    value: method.id,
+                    icon: method.name.toLowerCase().includes('fridge') ? '❄️' : 
+                          method.name.toLowerCase().includes('freezer') ? '🧊' : '🏠'
+                  }))}
+                  placeholder="Select storage method"
+                />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Quantity
                   </label>
                   <input
@@ -258,34 +280,34 @@ export default function AddItemPage() {
                     value={quantity}
                     onChange={(e) => setQuantity(e.target.value)}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Unit
                   </label>
-                  <select
+                  <CustomSelect
                     value={unit}
-                    onChange={(e) => setUnit(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                  >
-                    <option value="pieces">Pieces</option>
-                    <option value="kg">Kg</option>
-                    <option value="g">Grams</option>
-                    <option value="L">Liters</option>
-                    <option value="mL">mL</option>
-                    <option value="lbs">Pounds</option>
-                    <option value="oz">Ounces</option>
-                    <option value="packages">Packages</option>
-                  </select>
+                    onChange={(val) => setUnit(val)}
+                    options={[
+                      { label: 'Pieces', value: 'pieces' },
+                      { label: 'Kg', value: 'kg' },
+                      { label: 'Grams', value: 'g' },
+                      { label: 'Liters', value: 'L' },
+                      { label: 'mL', value: 'mL' },
+                      { label: 'Pounds', value: 'lbs' },
+                      { label: 'Ounces', value: 'oz' },
+                      { label: 'Packages', value: 'packages' }
+                    ]}
+                  />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Purchase Date
                   </label>
                   <input
@@ -294,12 +316,12 @@ export default function AddItemPage() {
                     onChange={(e) => setPurchasedAt(e.target.value)}
                     required
                     max={new Date().toISOString().split('T')[0]}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Opened Date (Optional)
                   </label>
                   <input
@@ -307,13 +329,13 @@ export default function AddItemPage() {
                     value={openedAt}
                     onChange={(e) => setOpenedAt(e.target.value)}
                     max={new Date().toISOString().split('T')[0]}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Notes (Optional)
                 </label>
                 <textarea
@@ -321,7 +343,7 @@ export default function AddItemPage() {
                   onChange={(e) => setNotes(e.target.value)}
                   rows={3}
                   placeholder="Add any additional notes..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                 />
               </div>
 
@@ -332,7 +354,7 @@ export default function AddItemPage() {
                 <Button
                   type="button"
                   onClick={() => router.push('/inventory')}
-                  className="bg-gray-500 hover:bg-gray-600"
+                  className="bg-gray-500 hover:bg-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600"
                 >
                   Cancel
                 </Button>
@@ -343,45 +365,89 @@ export default function AddItemPage() {
 
         <div>
           <Card>
-            <h3 className="font-semibold text-lg mb-4">Prediction Preview</h3>
+            <h3 className="font-semibold text-lg mb-4 text-gray-900 dark:text-white">Prediction Preview</h3>
             
             {predictedExpiry ? (
-              <div className="space-y-3">
-                <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-                  <p className="text-sm text-gray-600 mb-1">Predicted Expiry</p>
-                  <p className="text-2xl font-bold text-green-700">
+              <div className="space-y-6">
+                <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800 text-center">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Predicted Expiry</p>
+                  <p className="text-3xl font-bold text-green-700 dark:text-green-400">
                     {formatIndianDate(predictedExpiry)}
                   </p>
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Days until expiry:</span>
-                    <span className="font-medium">
-                      {Math.ceil((predictedExpiry.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Model:</span>
-                    <span className="font-medium">rb-1.1</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Confidence:</span>
-                    <span className="font-medium">85%</span>
-                  </div>
-                </div>
-
-                <div className="pt-3 border-t border-gray-200">
-                  <p className="text-xs text-gray-500">
-                    This prediction is based on storage conditions and product characteristics.
-                    Actual shelf life may vary based on environmental factors.
+                  <p className="text-sm font-medium text-green-600 dark:text-green-300 mt-1">
+                    {Math.ceil((predictedExpiry.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days left
                   </p>
+                </div>
+
+                {/* Storage Comparison Chart */}
+                {selectedProduct && (
+                  <div className="h-48 w-full">
+                    <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 uppercase tracking-wider">Storage Method Comparison</p>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart
+                        data={[
+                          { name: 'Pantry', days: selectedProduct.roomTempShelfLifeDays || 0, color: '#f97316' },
+                          { name: 'Fridge', days: selectedProduct.fridgeShelfLifeDays || 0, color: '#3b82f6' },
+                          { name: 'Freezer', days: selectedProduct.freezerShelfLifeDays || 0, color: '#6366f1' },
+                        ].filter(d => d.days > 0)}
+                        layout="vertical"
+                        margin={{ top: 5, right: 30, left: 40, bottom: 5 }}
+                      >
+                        <XAxis type="number" hide />
+                        <YAxis 
+                          type="category" 
+                          dataKey="name" 
+                          tick={{ fontSize: 12, fill: 'currentColor' }} 
+                          width={50}
+                          axisLine={false}
+                          tickLine={false}
+                        />
+                        <Tooltip 
+                          cursor={{ fill: 'transparent' }}
+                          contentStyle={{ 
+                            backgroundColor: 'rgba(255, 255, 255, 0.9)', 
+                            borderRadius: '8px', 
+                            border: 'none', 
+                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' 
+                          }}
+                        />
+                        <Bar dataKey="days" radius={[0, 4, 4, 0]} barSize={20}>
+                          {
+                            [
+                              { name: 'Pantry', days: selectedProduct.roomTempShelfLifeDays || 0, color: '#f97316' },
+                              { name: 'Fridge', days: selectedProduct.fridgeShelfLifeDays || 0, color: '#3b82f6' },
+                              { name: 'Freezer', days: selectedProduct.freezerShelfLifeDays || 0, color: '#6366f1' },
+                            ].filter(d => d.days > 0).map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={entry.color} />
+                            ))
+                          }
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <div className="text-center">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Model Confidence</p>
+                    <div className="relative h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                      <div className="absolute top-0 left-0 h-full bg-green-500 w-[85%]"></div>
+                    </div>
+                    <p className="text-sm font-bold text-gray-700 dark:text-gray-300 mt-1">85%</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Model Version</p>
+                    <p className="text-sm font-bold text-gray-700 dark:text-gray-300 mt-2">rb-1.1</p>
+                  </div>
                 </div>
               </div>
             ) : (
-              <p className="text-gray-500 text-sm">
-                Select a product and storage method to see the predicted expiry date.
-              </p>
+              <div className="flex flex-col items-center justify-center h-64 text-center p-6 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-lg">
+                <span className="text-4xl mb-3">🔮</span>
+                <p className="text-gray-500 dark:text-gray-400 text-sm">
+                  Select a product and storage method to see the AI prediction and storage comparison.
+                </p>
+              </div>
             )}
           </Card>
         </div>
