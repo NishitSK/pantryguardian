@@ -40,7 +40,7 @@ router.get('/', async (req, res) => {
 // TODO: Add verifyToken back after implementing JWT auth on frontend
 router.post('/', async (req, res) => {
   try {
-    const { productId, storageMethodId, quantity, purchaseDate , unit, openedAt, notes} = req.body;
+    const { productId, storageMethodId, quantity, purchasedAt , unit, openedAt, notes} = req.body;
 
         // Temporary: Use demo user
     const user = await prisma.user.findFirst({
@@ -51,7 +51,7 @@ router.post('/', async (req, res) => {
     }
 
     // Validation
-    if (!productId || !storageMethodId || !quantity || !purchaseDate) {
+    if (!productId || !storageMethodId || !quantity || !purchasedAt) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
@@ -102,7 +102,7 @@ router.post('/', async (req, res) => {
         productId,
         storageMethodId,
         quantity: parseInt(quantity),
-        purchaseDate: new Date(purchaseDate),
+        purchasedAt: new Date(purchasedAt),
         currentFreshnessScore: 5
       },
       include: {
@@ -125,7 +125,7 @@ router.post('/', async (req, res) => {
     }
 
     // Create initial prediction
-    const expiryDate = new Date(purchaseDate);
+    const expiryDate = new Date(purchasedAt);
     expiryDate.setDate(expiryDate.getDate() + shelfLifeDays);
 
     await prisma.prediction.create({
