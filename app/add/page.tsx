@@ -159,7 +159,7 @@ export default function AddItemPage() {
           storageMethodId: selectedStorageId,
           quantity: parseFloat(quantity),
           unit,
-          purchasedAt,
+          purchaseDate: purchasedAt,
           openedAt: openedAt || null,
           notes: notes || null
         })
