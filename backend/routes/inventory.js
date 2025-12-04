@@ -56,8 +56,8 @@ router.post('/', async (req, res) => {
     }
 
     const product = await prisma.product.findUnique({
-      where: { id: productId },
-      include: { category: true }
+      where: { id: productId }
+      
     });
 
     if (!product) {
