@@ -51,8 +51,7 @@ router.post('/', async (req, res) => {
     }
 
     // Validation
-    if (!productId || !storageMethodId || !quantity || !purchasedAt) {
-      return res.status(400).json({ error: 'Missing required fields' });
+    if (!productId || !storageMethodId || !quantity || !purchaseDate) {      return res.status(400).json({ error: 'Missing required fields' });
     }
 
     const product = await prisma.product.findUnique({
