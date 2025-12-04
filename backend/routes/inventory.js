@@ -102,8 +102,7 @@ router.post('/', async (req, res) => {
         productId,
         storageMethodId,
         quantity: parseInt(quantity),
-        purchasedAt: new Date(purchasedAt),
-        currentFreshnessScore: 5
+      purchasedAt: new Date(purchaseDate),        currentFreshnessScore: 5
       },
       include: {
         product: true,
