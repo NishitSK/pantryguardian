@@ -40,7 +40,7 @@ router.get('/', async (req, res) => {
 // TODO: Add verifyToken back after implementing JWT auth on frontend
 router.post('/', async (req, res) => {
   try {
-    const { productId, storageMethodId, quantity, purchasedAt , unit, openedAt, notes} = req.body;
+    const { productId, storageMethodId, quantity, purchaseDate , unit, openedAt, notes} = req.body;
 
         // Temporary: Use demo user
     const user = await prisma.user.findFirst({
