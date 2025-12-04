@@ -43,7 +43,7 @@ router.post('/', async (req, res) => {
     const { productId, storageMethodId, quantity, purchaseDate } = req.body;
 
         // Temporary: Use demo user
-    const user = await prisma.user.findUnique({
+    const user = await prisma.user.findFirst({
       where: { email: 'demo@example.com' }    });
 
     if (!user) {
@@ -213,7 +213,7 @@ router.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params;
 
-    const user = await prisma.user.findUnique({
+    const user = await prisma.user.findFirst({
       where: { email: 'demo@example.com' }    });
 
     if (!user) {
